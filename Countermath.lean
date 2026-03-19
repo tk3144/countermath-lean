@@ -84,6 +84,8 @@ LSpec can verify the counterexample $(1,-1) + (1,1) = (2,0)$ and confirm
 that $(2,0)$ does not satisfy the condition $|x| = |y|$.
 -/
 
+-- Define the condition for being in the set U
+-- Takes a pair of integers, and returns True if |p.1| == |p.2|
 def inU (p : Int × Int) : Bool :=
   p.1.natAbs == p.2.natAbs
 
@@ -135,7 +137,7 @@ other. We check that while (1,0) and (0,1) are in the union, their sum
 (1,1) is not.
 -/
 
-
+-- Define two subspaces such that neither is contained in the other
 -- Use 'Bool' and '==' instead of 'Prop' and '='
 def onXAxis (p : Int × Int) : Bool := p.2 == 0
 def onYAxis (p : Int × Int) : Bool := p.1 == 0
@@ -145,6 +147,10 @@ def onYAxis (p : Int × Int) : Bool := p.1 == 0
   let u2 := (0, 1)
   let sum := (u1.1 + u2.1, u1.2 + u2.2)
   -- Use Boolean operators: && (and), || (or), ! (not)
+  -- We essentially ask three questions:
+      -- Is u1 (1,0) in the union of the two subspaces? (True)
+      -- Is u2 (0,1) in the union of the two subspaces? (True)
+      -- Is u1 + u2 (1,1) NOT in the union of the two subspaces? (True)
   (onXAxis u1 || onYAxis u1) &&
   (onXAxis u2 || onYAxis u2) &&
   !(onXAxis sum || onYAxis sum)
@@ -260,6 +266,10 @@ end Statement249
 section Statement259
 /-!
 Statement:
+For any elements a, b in a semigroup and positive integers m,n
+If a ∘ b = b ∘ a, then a^m ∘ b^n = b^n ∘ a^m
+This is not always the case that a ∘ b = b ∘ a, and I will show such a case.
+
 If two elements commute, their powers commute. However, if powers commute,
 it does not imply the base elements commute.
 
@@ -271,23 +281,27 @@ Then $a^3 \circ b^2 = e \circ e = e$ and $b^2 \circ a^3 = e \circ e = e$.
 The powers commute, but $a \circ b \neq b \circ a$.
 
 CHECKABLE:
-The forward direction can be sampled using SlimCheck on integers.
-The counterexample in $D_3$ is a finite check that evaluates to true or false.
-The forward implication can be sampled using property-based testing on a
-commutative structure like integers.
+LSpec will compute the actual values of the matrix multiplications.
+Because matrix multiplication is decidable for fixed-size matrices over
+integers, Lean can reduce the expressions to their resulting matrices
+and compare them directly.
 -/
 
--- We explicitly provide the modulus (n := 3) to resolve the ZMod typeclass error.
-#lspec test "S259: D3 counterexample: a^3 * b^2 = b^2 * a^3 but ab != ba" (
-  let a : DihedralGroup 3 := DihedralGroup.r 1  -- rotation
-  let b : DihedralGroup 3 := DihedralGroup.sr 0 -- reflection
-  let m := 3
+-- Define the 2x2 matrices using a simple row-based constructor !![a, b; c, d]
+def A : Matrix (Fin 2) (Fin 2) Int := !![1, 0; 0, 0]
+def B : Matrix (Fin 2) (Fin 2) Int := !![0, 0; 1, 0]
+
+#lspec test "S259: Matrix counterexample: A^2 * B^2 = B^2 * A^2 but AB != BA" (
+  let m := 2
   let n := 2
-  -- The powers commute (both result in the identity element)
-  (a^m * b^n == b^n * a^m) &&
-  -- But the base elements do not
-  !(a * b == b * a)
+  let A2 := A ^ m
+  let B2 := B ^ n
+
+  -- 1. Check if powers commute (Both should be the zero matrix)
+  (A2 * B2 == B2 * A2) &&
+  -- 2. Check that the original matrices do NOT commute (AB = 0, BA = B)
+  !(A * B == B * A)
 )
--- ✓ ∃: S259: D3 counterexample: a^3 * b^2 = b^2 * a^3 but ab != ba
+-- ✓ ∃: S259: Matrix counterexample: A^2 * B^2 = B^2 * A^2 but AB != BA
 
 end Statement259
