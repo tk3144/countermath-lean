@@ -92,7 +92,7 @@ UNCHECKABLE:
   ordered field axioms, which is a theorem-level proof, not a runtime test.
 -/
 
-theorem complex_not_ordered_field : ¬ ∃ (inst : LinearOrder ℂ),
+theorem S15 : ¬ ∃ (inst : LinearOrder ℂ),
   ∀ (a b c : ℂ), a ≤ b → a + c ≤ b + c := by
   sorry
 
