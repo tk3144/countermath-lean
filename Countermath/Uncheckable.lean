@@ -86,10 +86,10 @@ be positive, and this contradicts Part (a) of Proposition 1.18, since 1
 and $-1$ cannot both be positive.
 
 UNCHECKABLE:
-Non-existence Claim: LSpec tests instances. You cannot sample "all
-possible orders" to prove that none of them work.
-Abstract Axioms: Proposition 1.18 refers to the internal logic of
-ordered field axioms, which is a theorem-level proof, not a runtime test.
+  Non-existence Claim: LSpec tests instances. You cannot sample "all
+  possible orders" to prove that none of them work.
+  Abstract Axioms: Proposition 1.18 refers to the internal logic of
+  ordered field axioms, which is a theorem-level proof, not a runtime test.
 -/
 
 theorem S15 : ¬ ∃ (inst : LinearOrder ℂ),
